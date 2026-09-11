@@ -268,6 +268,7 @@ class CarInterface(CarInterfaceBase):
       ret.steerActuatorDelay = 0.15
       ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096], [0, 4096]]
       CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
+      ret.wheelSpeedFactor = 1.025
 
     elif candidate == CAR.ACURA_ADX:
       ret.steerActuatorDelay = 0.15
