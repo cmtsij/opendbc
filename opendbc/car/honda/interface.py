@@ -40,6 +40,7 @@ class CarInterface(CarInterfaceBase):
     ret.brand = "honda"
 
     CAN = CanBus(ret, fingerprint)
+    autoResumeSngForce = False
 
     if ret.flags & HondaFlags.BOSCH:
       cfgs = [get_safety_config(structs.CarParams.SafetyModel.hondaBosch)]
@@ -276,6 +277,11 @@ class CarInterface(CarInterfaceBase):
       ret.steerActuatorDelay = 0.15
       ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 4096], [0, 4096]]
       CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
+      for fw in car_fw:
+        #FIT_4G with Japaness fwdRadar
+        if fw.ecu == "fwdRadar" and b"36161-" in fw.fwVersion:
+          autoResumeSngForce = True
+          break
 
     elif candidate == CAR.ACURA_ADX:
       ret.steerActuatorDelay = 0.15
@@ -325,6 +331,8 @@ class CarInterface(CarInterfaceBase):
       ret.autoResumeSng = False
     else:
       ret.autoResumeSng = bool(ret.flags & HondaFlags.BOSCH) or candidate == CAR.HONDA_CIVIC
+    if autoResumeSngForce:
+      ret.autoResumeSng = True
     if ret.autoResumeSng:
       ret.minEnableSpeed = -1.
     elif candidate == CAR.HONDA_ODYSSEY_TWN:
